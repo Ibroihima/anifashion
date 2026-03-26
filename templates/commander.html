@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Commander – Anifashion{% endblock %}
+{% block content %}
+
+<div class="section" style="padding-top:120px;max-width:900px;margin:0 auto">
+
+  <div style="margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid #ede0e8">
+    <h1 class="section-title">Finaliser ma <em>Commande</em></h1>
+    <p style="color:#9a7a87;font-weight:300">Vérifiez votre adresse de livraison et confirmez.</p>
+  </div>
+
+  <div class="commander-layout">
+    <!-- FORMULAIRE -->
+    <div>
+      <form method="POST" action="{{ url_for('commander') }}">
+        <div class="form-card">
+          <h3 class="form-card-title" style="font-family:'Playfair Display',serif;font-size:1.15rem;color:#2b1a2f;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid #ede0e8">
+            📍 Adresse de livraison
+          </h3>
+          <div class="form-group">
+            <label style="font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;color:#9a7a87;font-weight:600">Adresse</label>
+            <input type="text" name="adresse" value="{{ user.adresse or '' }}"
+                   placeholder="123 rue de la Mode" required
+                   style="padding:11px 14px;border:1.5px solid #ede0e8;border-radius:6px;font-family:'Jost';font-size:.9rem;width:100%;outline:none">
+          </div>
+          <div class="form-group" style="margin-top:14px">
+            <label style="font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;color:#9a7a87;font-weight:600">Ville</label>
+            <input type="text" name="ville" value="{{ user.ville or '' }}"
+                   placeholder="Paris" required
+                   style="padding:11px 14px;border:1.5px solid #ede0e8;border-radius:6px;font-family:'Jost';font-size:.9rem;width:100%;outline:none">
+          </div>
+        </div>
+
+        <div class="form-card" style="margin-top:16px">
+          <h3 class="form-card-title" style="font-family:'Playfair Display',serif;font-size:1.15rem;color:#2b1a2f;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #ede0e8">
+            💰 Total à payer
+          </h3>
+          <div style="display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:8px">
+            <span style="color:#9a7a87">Sous-total</span>
+            <span>{{ "%.2f"|format(total) }} €</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:16px">
+            <span style="color:#9a7a87">Livraison</span>
+            <span>{% if total >= 60 %}Gratuite 🎉{% else %}4,99 €{% endif %}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:1.2rem;font-weight:700;color:#d4567a;padding-top:12px;border-top:2px solid #f2a7b8">
+            <span>Total</span>
+            <strong>{{ "%.2f"|format(total + (0 if total >= 60 else 4.99)) }} €</strong>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width:100%;justify-content:center;margin-top:20px;padding:16px">
+          ✅ Confirmer la commande
+        </button>
+        <a href="{{ url_for('voir_panier') }}" class="btn-secondary"
+           style="width:100%;justify-content:center;margin-top:10px;display:flex">
+          ← Retour au panier
+        </a>
+      </form>
+    </div>
+
+    <!-- RÉCAP ARTICLES -->
+    <div class="form-card" style="height:fit-content">
+      <h3 class="form-card-title" style="font-family:'Playfair Display',serif;font-size:1.1rem;color:#2b1a2f;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #ede0e8">
+        🛍️ Récapitulatif
+      </h3>
+      {% set panier = session.get('panier', {}) %}
+      {% for pid, qty in panier.items() %}
+        {% set p = namespace(obj=none) %}
+        {% for prod in produits_recap if prod.id == pid|int %}
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f5eef2">
+            <div style="width:40px;height:40px;background:#fce8ef;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">
+              {{ prod.categorie.emoji if prod.categorie else '👗' }}
+            </div>
+            <div style="flex:1;min-width:0">
+              <p style="font-weight:500;font-size:.87rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ prod.nom }}</p>
+              <p style="font-size:.78rem;color:#9a7a87">× {{ qty }}</p>
+            </div>
+            <span style="color:#d4567a;font-weight:600;font-size:.9rem;white-space:nowrap">{{ "%.2f"|format(prod.prix * qty) }} €</span>
+          </div>
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Produits – Admin Anifashion{% endblock %}
+{% block dashboard_content %}
+
+<div class="dash-header">
+  <div>
+    <h1>Gestion des <em>Produits</em></h1>
+    <p>{{ produits|length }} produit(s) au total</p>
+  </div>
+  <a href="{{ url_for('admin_produit_ajouter') }}" class="btn-primary">+ Ajouter un produit</a>
+</div>
+
+<div class="table-wrap">
+  <table class="dash-table">
+    <thead>
+      <tr><th>Image</th><th>Nom</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Badge</th><th>Statut</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for p in produits %}
+      <tr>
+        <td>
+          {% if p.image and p.image != 'default.jpg' %}
+            <img src="{{ url_for('static', filename='uploads/' + p.image) }}" style="width:50px;height:50px;object-fit:cover;border-radius:4px">
+          {% else %}
+            <div style="width:50px;height:50px;background:linear-gradient(135deg,#fce8ef,#f2a7b8);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1.4rem">👗</div>
+          {% endif %}
+        </td>
+        <td><strong>{{ p.nom }}</strong></td>
+        <td>{{ p.categorie.nom if p.categorie else '—' }}</td>
+        <td>
+          <strong>{{ "%.2f"|format(p.prix) }} €</strong>
+          {% if p.prix_ancien %}<br><small style="text-decoration:line-through;color:#aaa">{{ "%.2f"|format(p.prix_ancien) }} €</small>{% endif %}
+        </td>
+        <td>
+          <span class="{% if p.stock <= 5 %}text-danger{% elif p.stock <= 20 %}text-warning{% else %}text-success{% endif %}">
+            {{ p.stock }}
+          </span>
+        </td>
+        <td>{% if p.badge %}<span class="badge-tag">{{ p.badge }}</span>{% else %}—{% endif %}</td>
+        <td><span class="status-badge {% if p.actif %}status-livrée{% else %}status-annulée{% endif %}">{{ 'Actif' if p.actif else 'Inactif' }}</span></td>
+        <td class="actions-cell">
+          <a href="{{ url_for('admin_produit_modifier', id=p.id) }}" class="btn-link">✏️ Modifier</a>
+          <a href="{{ url_for('admin_produit_supprimer', id=p.id) }}" class="btn-link text-danger" onclick="return confirm('Désactiver ce produit ?')">🗑️</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" style="text-align:center;padding:40px;color:#9a7a87">Aucun produit.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

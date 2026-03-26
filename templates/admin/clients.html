@@ -1,0 +1,37 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Clients – Admin Anifashion{% endblock %}
+{% block dashboard_content %}
+
+<div class="dash-header">
+  <h1>Gestion des <em>Clients</em></h1>
+  <p>{{ clients|length }} client(s) inscrit(s)</p>
+</div>
+
+<div class="table-wrap">
+  <table class="dash-table">
+    <thead>
+      <tr><th>Client</th><th>Email</th><th>Téléphone</th><th>Ville</th><th>Inscrit le</th><th>Commandes</th></tr>
+    </thead>
+    <tbody>
+      {% for c in clients %}
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="sidebar-avatar" style="width:36px;height:36px;font-size:.85rem">{{ c.prenom[0] }}{{ c.nom[0] }}</div>
+            <strong>{{ c.prenom }} {{ c.nom }}</strong>
+          </div>
+        </td>
+        <td>{{ c.email }}</td>
+        <td>{{ c.telephone or '—' }}</td>
+        <td>{{ c.ville or '—' }}</td>
+        <td>{{ c.date_inscription.strftime('%d/%m/%Y') }}</td>
+        <td><span class="badge-tag">{{ c.commandes|length }}</span></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" style="text-align:center;padding:40px;color:#9a7a87">Aucun client.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

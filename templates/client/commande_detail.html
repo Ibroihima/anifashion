@@ -1,0 +1,59 @@
+{% extends 'client/base_client.html' %}
+{% block title %}Commande #{{ commande.id }} – Anifashion{% endblock %}
+{% block dashboard_content %}
+
+<div class="dash-header">
+  <h1>Commande <em>#{{ commande.id }}</em></h1>
+  <p>Passée le {{ commande.date_commande.strftime('%d/%m/%Y à %H:%M') }}</p>
+</div>
+
+<div class="order-detail-grid">
+  <div class="order-items">
+    <div class="form-card">
+      <h3 class="form-card-title">Articles commandés</h3>
+      {% for ligne in commande.lignes %}
+      <div class="order-item">
+        <div class="order-item-img">{{ ligne.produit.categorie.emoji if ligne.produit.categorie else '👗' }}</div>
+        <div class="order-item-info">
+          <p class="order-item-name">{{ ligne.produit.nom }}</p>
+          <p class="order-item-qty">Quantité : {{ ligne.quantite }}</p>
+        </div>
+        <div class="order-item-price">{{ "%.2f"|format(ligne.prix_unitaire * ligne.quantite) }} €</div>
+      </div>
+      {% endfor %}
+      <div class="order-total">
+        <span>Total</span>
+        <strong>{{ "%.2f"|format(commande.total) }} €</strong>
+      </div>
+    </div>
+  </div>
+  <div class="order-info">
+    <div class="form-card">
+      <h3 class="form-card-title">Statut</h3>
+      <span class="status-badge status-{{ commande.statut|lower|replace(' ','') }}" style="font-size:1rem;padding:10px 20px">{{ commande.statut }}</span>
+      {% set etapes = ['En attente','Confirmée','Expédiée','Livrée'] %}
+      {% set statut_idx = etapes.index(commande.statut) if commande.statut in etapes else 0 %}
+      <div class="status-steps">
+        {% for step in etapes %}
+          {% set step_idx = loop.index0 %}
+          {% if step_idx == statut_idx %}
+            <div class="status-step active">{{ step }}</div>
+          {% elif step_idx < statut_idx %}
+            <div class="status-step done">{{ step }}</div>
+          {% else %}
+            <div class="status-step">{{ step }}</div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    <div class="form-card">
+      <h3 class="form-card-title">Livraison</h3>
+      <p>{{ commande.adresse_livraison or 'Non renseignée' }}</p>
+      <p>{{ commande.ville_livraison or '' }}</p>
+    </div>
+  </div>
+</div>
+
+<a href="{{ url_for('client_commandes') }}" class="btn-secondary" style="margin-top:20px;display:inline-flex">← Retour aux commandes</a>
+
+{% endblock %}

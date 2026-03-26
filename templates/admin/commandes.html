@@ -1,0 +1,33 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Commandes – Admin Anifashion{% endblock %}
+{% block dashboard_content %}
+
+<div class="dash-header">
+  <h1>Gestion des <em>Commandes</em></h1>
+  <p>{{ commandes|length }} commande(s) au total</p>
+</div>
+
+<div class="table-wrap">
+  <table class="dash-table">
+    <thead>
+      <tr><th>#</th><th>Client</th><th>Date</th><th>Articles</th><th>Total</th><th>Statut</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      {% for cmd in commandes %}
+      <tr>
+        <td><strong>#{{ cmd.id }}</strong></td>
+        <td>{{ cmd.client.prenom }} {{ cmd.client.nom }}<br><small style="color:#9a7a87">{{ cmd.client.email }}</small></td>
+        <td>{{ cmd.date_commande.strftime('%d/%m/%Y') }}</td>
+        <td>{{ cmd.lignes|length }} article(s)</td>
+        <td><strong>{{ "%.2f"|format(cmd.total) }} €</strong></td>
+        <td><span class="status-badge status-{{ cmd.statut|lower|replace(' ','') }}">{{ cmd.statut }}</span></td>
+        <td><a href="{{ url_for('admin_commande_detail', id=cmd.id) }}" class="btn-link">Gérer →</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" style="text-align:center;padding:40px;color:#9a7a87">Aucune commande.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

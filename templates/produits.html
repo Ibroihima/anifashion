@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Produits – Anifashion{% endblock %}
+{% block content %}
+
+<div style="padding-top:100px" class="section">
+  <div class="dash-header" style="border:none;padding:0 0 20px 0;margin-bottom:20px">
+    <h1 class="section-title">Nos <em>Produits</em></h1>
+    <a href="{{ url_for('voir_panier') }}" class="btn-panier-nav">
+      🛍️ Panier
+      {% if panier_count > 0 %}
+        <span class="panier-badge">{{ panier_count }}</span>
+      {% endif %}
+    </a>
+  </div>
+
+  <!-- FILTRES -->
+  <div class="filter-bar reveal">
+    <a href="{{ url_for('produits') }}" class="filter-btn {% if not cat_id %}active{% endif %}">Tous</a>
+    {% for cat in categories %}
+    <a href="{{ url_for('produits') }}?categorie={{ cat.id }}"
+       class="filter-btn {% if cat_id and cat_id|int == cat.id %}active{% endif %}">
+      {{ cat.emoji }} {{ cat.nom }}
+    </a>
+    {% endfor %}
+  </div>
+
+  <div class="products-grid" style="margin-top:36px">
+    {% for p in produits %}
+    <div class="product-card reveal">
+      <div class="product-img" style="background:linear-gradient(160deg,#fce8ef,#f2a7b8)">
+        {% if p.image and p.image != 'default.jpg' %}
+          <img src="{{ url_for('static', filename='uploads/' + p.image) }}" alt="{{ p.nom }}"
+               style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">
+        {% else %}
+          <div class="product-img-bg">{{ p.categorie.emoji if p.categorie else '👗' }}</div>
+        {% endif %}
+        {% if p.badge %}
+          <span class="badge-{{ 'new' if p.badge == 'Nouveau' else 'sale' }}">{{ p.badge }}</span>
+        {% endif %}
+
+        <!-- ACTIONS -->
+        <div class="product-actions">
+          {% if p.stock > 0 %}
+            <form method="POST" action="{{ url_for('ajouter_panier', produit_id=p.id) }}" style="flex:1;display:flex">
+              <input type="hidden" name="quantite" value="1">
+              <button type="submit" class="btn-cart">🛒 Ajouter</button>
+            </form>
+          {% else %}
+            <button class="btn-cart btn-rupture" disabled>Rupture</button>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="product-info">
+        <p class="cat-label">{{ p.categorie.nom if p.categorie else '' }}</p>
+        <h3>{{ p.nom }}</h3>
+        <div class="price-row">
+          <span class="price-current">{{ "%.2f"|format(p.prix) }} €</span>
+          {% if p.prix_ancien %}<span class="price-old">{{ "%.2f"|format(p.prix_ancien) }} €</span>{% endif %}
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+          <div class="stars">★★★★★</div>
+          <span class="stock-info {% if p.stock <= 5 %}stock-low{% endif %}">
+            {% if p.stock <= 0 %}Rupture{% elif p.stock <= 5 %}Plus que {{ p.stock }}{% else %}En stock{% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div style="grid-column:1/-1;text-align:center;padding:80px;color:#9a7a87">
+      <div style="font-size:4rem;margin-bottom:16px">👗</div>
+      <p>Aucun produit dans cette catégorie pour le moment.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

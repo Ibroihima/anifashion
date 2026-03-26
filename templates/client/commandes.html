@@ -1,0 +1,39 @@
+{% extends 'client/base_client.html' %}
+{% block title %}Mes Commandes – Anifashion{% endblock %}
+{% block dashboard_content %}
+
+<div class="dash-header">
+  <h1>Mes <em>Commandes</em></h1>
+  <p>Suivez l'état de toutes vos commandes.</p>
+</div>
+
+{% if commandes %}
+<div class="table-wrap">
+  <table class="dash-table">
+    <thead>
+      <tr><th>#</th><th>Date</th><th>Articles</th><th>Adresse</th><th>Total</th><th>Statut</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      {% for cmd in commandes %}
+      <tr>
+        <td><strong>#{{ cmd.id }}</strong></td>
+        <td>{{ cmd.date_commande.strftime('%d/%m/%Y %H:%M') }}</td>
+        <td>{{ cmd.lignes|length }} article(s)</td>
+        <td>{{ cmd.ville_livraison or '—' }}</td>
+        <td><strong>{{ "%.2f"|format(cmd.total) }} €</strong></td>
+        <td><span class="status-badge status-{{ cmd.statut|lower|replace(' ','') }}">{{ cmd.statut }}</span></td>
+        <td><a href="{{ url_for('client_commande_detail', id=cmd.id) }}" class="btn-link">Voir →</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">📦</div>
+  <p>Aucune commande pour le moment.</p>
+  <a href="{{ url_for('produits') }}" class="btn-primary">Découvrir nos produits →</a>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Connexion – Anifashion{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="auth-deco">
+      <div class="auth-circle auth-circle-1"></div>
+      <div class="auth-circle auth-circle-2"></div>
+      <div class="auth-brand">
+        <p class="auth-tagline">✦ Bienvenue sur</p>
+        <div class="logo" style="font-size:2.8rem">Ani<span>fashion</span></div>
+        <p style="color:rgba(255,255,255,.6);margin-top:20px;font-weight:300">Mode femme & fille</p>
+      </div>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-box">
+      <h2 class="auth-title">Connexion</h2>
+      <p class="auth-sub">Accédez à votre compte Anifashion</p>
+      <form method="POST" action="{{ url_for('login') }}" class="auth-form">
+        <div class="form-group">
+          <label>Adresse email</label>
+          <input type="email" name="email" placeholder="votre@email.com" required>
+        </div>
+        <div class="form-group">
+          <label>Mot de passe</label>
+          <input type="password" name="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-primary w-full">Se connecter →</button>
+      </form>
+      <div class="auth-info">
+        <p style="color:#9a7a87;font-size:.85rem;margin-top:12px">
+          🔑 Admin test : admin@anifashion.com / admin123
+        </p>
+      </div>
+      <p class="auth-switch">Pas encore de compte ? <a href="{{ url_for('inscription') }}">S'inscrire</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

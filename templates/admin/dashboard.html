@@ -1,0 +1,115 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Dashboard Admin – Anifashion{% endblock %}
+{% block dashboard_content %}
+
+<div class="dash-header">
+  <h1>Tableau de <em>Bord</em></h1>
+  <p>Vue d'ensemble de votre boutique Anifashion.</p>
+</div>
+
+<!-- KPI CARDS -->
+<div class="stats-grid">
+  <div class="stat-card stat-rose">
+    <div class="stat-icon">💰</div>
+    <div class="stat-info">
+      <p class="stat-num">{{ "%.0f"|format(chiffre_affaires) }} €</p>
+      <p class="stat-label">Chiffre d'affaires</p>
+    </div>
+  </div>
+  <div class="stat-card stat-purple">
+    <div class="stat-icon">📦</div>
+    <div class="stat-info">
+      <p class="stat-num">{{ total_commandes }}</p>
+      <p class="stat-label">Commandes</p>
+    </div>
+  </div>
+  <div class="stat-card stat-orange">
+    <div class="stat-icon">👗</div>
+    <div class="stat-info">
+      <p class="stat-num">{{ total_produits }}</p>
+      <p class="stat-label">Produits actifs</p>
+    </div>
+  </div>
+  <div class="stat-card stat-green">
+    <div class="stat-icon">👥</div>
+    <div class="stat-info">
+      <p class="stat-num">{{ total_users }}</p>
+      <p class="stat-label">Clients</p>
+    </div>
+  </div>
+</div>
+
+<div class="admin-grid-2">
+  <!-- COMMANDES RÉCENTES -->
+  <div class="dash-section">
+    <div class="dash-section-header">
+      <h2>Commandes récentes</h2>
+      <a href="{{ url_for('admin_commandes') }}" class="btn-sm">Voir tout →</a>
+    </div>
+    {% if commandes_recentes %}
+    <div class="table-wrap">
+      <table class="dash-table">
+        <thead><tr><th>#</th><th>Client</th><th>Total</th><th>Statut</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for cmd in commandes_recentes %}
+          <tr>
+            <td><strong>#{{ cmd.id }}</strong></td>
+            <td>{{ cmd.client.prenom }} {{ cmd.client.nom }}</td>
+            <td>{{ "%.2f"|format(cmd.total) }} €</td>
+            <td><span class="status-badge status-{{ cmd.statut|lower|replace(' ','') }}">{{ cmd.statut }}</span></td>
+            <td><a href="{{ url_for('admin_commande_detail', id=cmd.id) }}" class="btn-link">Gérer</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="empty-icon">📦</div><p>Aucune commande.</p></div>
+    {% endif %}
+  </div>
+
+  <!-- STATS STATUTS -->
+  <div class="dash-section">
+    <div class="dash-section-header">
+      <h2>Statuts des commandes</h2>
+    </div>
+    {% if stats_statuts %}
+    <div class="statut-chart">
+      {% for statut, count in stats_statuts %}
+      <div class="statut-bar-row">
+        <span class="statut-label">{{ statut }}</span>
+        <div class="statut-bar-wrap">
+          <div class="statut-bar" style="width: {{ (count / total_commandes * 100)|int if total_commandes else 0 }}%">
+            {{ count }}
+          </div>
+        </div>
+        <span class="statut-count status-badge status-{{ statut|lower|replace(' ','') }}">{{ statut }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="empty-icon">📊</div><p>Aucune donnée.</p></div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ACTIONS RAPIDES -->
+<div class="dash-section">
+  <h2>Actions rapides</h2>
+  <div class="quick-actions">
+    <a href="{{ url_for('admin_produit_ajouter') }}" class="quick-btn">
+      <span>➕</span> Ajouter un produit
+    </a>
+    <a href="{{ url_for('admin_commandes') }}" class="quick-btn">
+      <span>📦</span> Gérer les commandes
+    </a>
+    <a href="{{ url_for('admin_clients') }}" class="quick-btn">
+      <span>👥</span> Voir les clients
+    </a>
+    <a href="{{ url_for('admin_categories') }}" class="quick-btn">
+      <span>🏷️</span> Catégories
+    </a>
+  </div>
+</div>
+
+{% endblock %}

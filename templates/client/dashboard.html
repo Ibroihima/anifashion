@@ -1,0 +1,98 @@
+{% extends 'client/base_client.html' %}
+{% block title %}Mon Compte – Anifashion{% endblock %}
+{% block dashboard_content %}
+
+<div class="dash-header">
+  <h1>Bonjour, <em>{{ user.prenom }}</em> 👋</h1>
+  <p>Bienvenue dans votre espace personnel Anifashion.</p>
+</div>
+
+<!-- STATS CARDS -->
+<div class="stats-grid">
+  <div class="stat-card stat-rose">
+    <div class="stat-icon">📦</div>
+    <div class="stat-info">
+      <p class="stat-num">{{ commandes|length }}</p>
+      <p class="stat-label">Commandes</p>
+    </div>
+  </div>
+  <div class="stat-card stat-purple">
+    <div class="stat-icon">✅</div>
+    <div class="stat-info">
+      <p class="stat-num">{{ commandes|selectattr('statut','equalto','Livrée')|list|length }}</p>
+      <p class="stat-label">Livrées</p>
+    </div>
+  </div>
+  <div class="stat-card stat-orange">
+    <div class="stat-icon">🚚</div>
+    <div class="stat-info">
+      <p class="stat-num">{{ commandes|selectattr('statut','equalto','Expédiée')|list|length }}</p>
+      <p class="stat-label">En transit</p>
+    </div>
+  </div>
+  <div class="stat-card stat-green">
+    <div class="stat-icon">💰</div>
+    <div class="stat-info">
+      <p class="stat-num">{{ "%.2f"|format(commandes|sum(attribute='total')) }} €</p>
+      <p class="stat-label">Total dépensé</p>
+    </div>
+  </div>
+</div>
+
+<!-- DERNIÈRES COMMANDES -->
+<div class="dash-section">
+  <div class="dash-section-header">
+    <h2>Mes dernières commandes</h2>
+    <a href="{{ url_for('client_commandes') }}" class="btn-sm">Voir tout →</a>
+  </div>
+  {% if commandes %}
+  <div class="table-wrap">
+    <table class="dash-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Date</th>
+          <th>Articles</th>
+          <th>Total</th>
+          <th>Statut</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cmd in commandes[:5] %}
+        <tr>
+          <td><strong>#{{ cmd.id }}</strong></td>
+          <td>{{ cmd.date_commande.strftime('%d/%m/%Y') }}</td>
+          <td>{{ cmd.lignes|length }} article(s)</td>
+          <td><strong>{{ "%.2f"|format(cmd.total) }} €</strong></td>
+          <td><span class="status-badge status-{{ cmd.statut|lower|replace(' ','') }}">{{ cmd.statut }}</span></td>
+          <td><a href="{{ url_for('client_commande_detail', id=cmd.id) }}" class="btn-link">Détails</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">🛍️</div>
+    <p>Vous n'avez pas encore de commandes.</p>
+    <a href="{{ url_for('produits') }}" class="btn-primary">Commencer à magasiner →</a>
+  </div>
+  {% endif %}
+</div>
+
+<!-- INFOS PROFIL RAPIDE -->
+<div class="dash-section">
+  <div class="dash-section-header">
+    <h2>Mon profil</h2>
+    <a href="{{ url_for('client_profil') }}" class="btn-sm">Modifier →</a>
+  </div>
+  <div class="profile-quick">
+    <div class="profile-quick-item"><span>📧</span> {{ user.email }}</div>
+    <div class="profile-quick-item"><span>📞</span> {{ user.telephone or 'Non renseigné' }}</div>
+    <div class="profile-quick-item"><span>📍</span> {{ user.ville or 'Non renseigné' }}</div>
+    <div class="profile-quick-item"><span>📅</span> Membre depuis {{ user.date_inscription.strftime('%B %Y') }}</div>
+  </div>
+</div>
+
+{% endblock %}

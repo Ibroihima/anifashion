@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Anifashion{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-container">
+      {% for cat, msg in messages %}
+        <div class="flash flash-{{ cat }}">{{ msg }} <button onclick="this.parentElement.remove()">×</button></div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- NAV -->
+<nav>
+  <a href="{{ url_for('index') }}" class="logo">Ani<span>fashion</span></a>
+  <ul>
+    <li><a href="{{ url_for('produits') }}?categorie=1">Femme</a></li>
+    <li><a href="{{ url_for('produits') }}?categorie=2">Fille</a></li>
+    <li><a href="{{ url_for('produits') }}">Nouveautés</a></li>
+    <li><a href="{{ url_for('produits') }}">Tous les produits</a></li>
+  </ul>
+  <div class="nav-icons">
+    {% if session.user_id %}
+      <a href="{{ url_for('client_dashboard') if session.role == 'client' else url_for('admin_dashboard') }}" class="nav-user">
+        👤 {{ session.user_nom }}
+      </a>
+      <a href="{{ url_for('logout') }}" class="nav-logout">Déconnexion</a>
+    {% else %}
+      <a href="{{ url_for('login') }}" class="nav-btn-login">Connexion</a>
+      <a href="{{ url_for('inscription') }}" class="nav-btn-register">Inscription</a>
+    {% endif %}
+    <a href="{{ url_for('voir_panier') }}" class="nav-panier">
+      🛍️
+      {% if panier_count > 0 %}
+        <span class="nav-panier-badge">{{ panier_count }}</span>
+      {% endif %}
+    </a>
+  </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span class="logo">Ani<span>fashion</span></span>
+      <p>La boutique en ligne dédiée à la mode femme et fille.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Boutique</h4>
+      <ul>
+        <li><a href="#">Collection Femme</a></li>
+        <li><a href="#">Mini Mode</a></li>
+        <li><a href="#">Nouveautés</a></li>
+        <li><a href="#">Soldes</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Mon Compte</h4>
+      <ul>
+        {% if session.user_id %}
+        <li><a href="{{ url_for('client_dashboard') }}">Mon tableau de bord</a></li>
+        <li><a href="{{ url_for('client_commandes') }}">Mes commandes</a></li>
+        <li><a href="{{ url_for('client_profil') }}">Mon profil</a></li>
+        {% else %}
+        <li><a href="{{ url_for('login') }}">Connexion</a></li>
+        <li><a href="{{ url_for('inscription') }}">Inscription</a></li>
+        {% endif %}
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Aide</h4>
+      <ul>
+        <li><a href="#">Livraison</a></li>
+        <li><a href="#">Retours</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Anifashion – Tous droits réservés</span>
+    <span>💳 Visa · Mastercard · PayPal · Apple Pay</span>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

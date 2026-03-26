@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}Mon Panier – Anifashion{% endblock %}
+{% block content %}
+
+<div class="section" style="padding-top:120px;max-width:1100px;margin:0 auto">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;padding-bottom:20px;border-bottom:1px solid #ede0e8">
+    <h1 class="section-title" style="margin:0">Mon <em>Panier</em></h1>
+    <a href="{{ url_for('produits') }}" class="btn-secondary">← Continuer mes achats</a>
+  </div>
+
+  {% if items %}
+  <div class="panier-layout">
+
+    <!-- ARTICLES -->
+    <div class="panier-items">
+      {% for item in items %}
+      <div class="panier-card">
+        <div class="panier-img">
+          {% if item.produit.image and item.produit.image != 'default.jpg' %}
+            <img src="{{ url_for('static', filename='uploads/' + item.produit.image) }}" alt="{{ item.produit.nom }}">
+          {% else %}
+            <span style="font-size:2.5rem">{{ item.produit.categorie.emoji if item.produit.categorie else '👗' }}</span>
+          {% endif %}
+        </div>
+        <div class="panier-info">
+          <p class="panier-cat">{{ item.produit.categorie.nom if item.produit.categorie else '' }}</p>
+          <h3 class="panier-nom">{{ item.produit.nom }}</h3>
+          <p class="panier-prix">{{ "%.2f"|format(item.produit.prix) }} € / unité</p>
+        </div>
+        <div class="panier-qty">
+          <form method="POST" action="{{ url_for('modifier_panier', produit_id=item.produit.id) }}" style="display:flex;align-items:center;gap:8px">
+            <button type="submit" name="quantite" value="{{ item.quantite - 1 }}" class="qty-btn">−</button>
+            <span class="qty-num">{{ item.quantite }}</span>
+            <button type="submit" name="quantite" value="{{ item.quantite + 1 }}"
+                    class="qty-btn" {% if item.quantite >= item.produit.stock %}disabled{% endif %}>+</button>
+          </form>
+        </div>
+        <div class="panier-sous-total">
+          <strong>{{ "%.2f"|format(item.sous_total) }} €</strong>
+        </div>
+        <a href="{{ url_for('supprimer_panier', produit_id=item.produit.id) }}" class="panier-delete" title="Supprimer">✕</a>
+      </div>
+      {% endfor %}
+
+      <div style="display:flex;justify-content:flex-end;margin-top:12px">
+        <a href="{{ url_for('vider_panier') }}" class="btn-vider"
+           onclick="return confirm('Vider tout le panier ?')">🗑 Vider le panier</a>
+      </div>
+    </div>
+
+    <!-- RÉSUMÉ -->
+    <div class="panier-resume">
+      <h3 class="resume-title">Résumé de la commande</h3>
+      <div class="resume-ligne">
+        <span>Sous-total</span>
+        <span>{{ "%.2f"|format(total) }} €</span>
+      </div>
+      <div class="resume-ligne">
+        <span>Livraison</span>
+        <span class="{% if total >= 60 %}text-success{% endif %}">
+          {% if total >= 60 %}Gratuite 🎉{% else %}+4,99 €{% endif %}
+        </span>
+      </div>
+      {% if total < 60 %}
+      <p class="livraison-hint">Plus que {{ "%.2f"|format(60 - total) }} € pour la livraison gratuite !</p>
+      {% endif %}
+      <div class="resume-total">
+        <span>Total</span>
+        <strong>{{ "%.2f"|format(total + (0 if total >= 60 else 4.99)) }} €</strong>
+      </div>
+
+      {% if session.user_id %}
+        <a href="{{ url_for('commander') }}" class="btn-primary w-full" style="margin-top:20px;justify-content:center">
+          ✅ Passer la commande
+        </a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn-primary w-full" style="margin-top:20px;justify-content:center">
+          🔐 Se connecter pour commander
+        </a>
+        <p style="font-size:.8rem;color:#9a7a87;text-align:center;margin-top:10px">
+          Ou <a href="{{ url_for('inscription') }}" style="color:var(--accent)">créer un compte</a>
+        </p>
+      {% endif %}
+    </div>
+  </div>
+
+  {% else %}
+  <div style="text-align:center;padding:80px 20px;color:#9a7a87">
+    <div style="font-size:5rem;margin-bottom:20px">🛍️</div>
+    <h2 style="font-family:'Playfair Display',serif;margin-bottom:12px;color:#2b1a2f">Votre panier est vide</h2>
+    <p style="margin-bottom:32px">Découvrez nos produits et ajoutez vos coups de cœur !</p>
+    <a href="{{ url_for('produits') }}" class="btn-primary">Parcourir la boutique →</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

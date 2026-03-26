@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin – Anifashion{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body class="dashboard-body">
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-container">
+      {% for cat, msg in messages %}
+        <div class="flash flash-{{ cat }}">{{ msg }} <button onclick="this.parentElement.remove()">×</button></div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR ADMIN -->
+  <aside class="sidebar sidebar-admin">
+
+    <div class="sidebar-logo">
+      <a href="{{ url_for('index') }}" class="logo-dash">Ani<span>fashion</span></a>
+      <span class="admin-badge">Admin</span>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">{{ session.user_nom[0] if session.user_nom else 'A' }}</div>
+      <div class="sidebar-user-info">
+        <p class="sidebar-name">{{ session.user_nom }}</p>
+        <p class="sidebar-role">Administrateur</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <span class="sidebar-section-label">PRINCIPAL</span>
+      <a href="{{ url_for('admin_dashboard') }}"
+         class="sidebar-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+        <span class="sidebar-icon">📊</span>
+        <span class="sidebar-text">Tableau de bord</span>
+      </a>
+
+      <span class="sidebar-section-label">BOUTIQUE</span>
+      <a href="{{ url_for('admin_produits') }}"
+         class="sidebar-link {% if 'produit' in request.endpoint %}active{% endif %}">
+        <span class="sidebar-icon">👗</span>
+        <span class="sidebar-text">Produits</span>
+      </a>
+      <a href="{{ url_for('admin_categories') }}"
+         class="sidebar-link {% if request.endpoint == 'admin_categories' %}active{% endif %}">
+        <span class="sidebar-icon">🏷️</span>
+        <span class="sidebar-text">Catégories</span>
+      </a>
+
+      <span class="sidebar-section-label">VENTES</span>
+      <a href="{{ url_for('admin_commandes') }}"
+         class="sidebar-link {% if 'commande' in request.endpoint %}active{% endif %}">
+        <span class="sidebar-icon">📦</span>
+        <span class="sidebar-text">Commandes</span>
+      </a>
+      <a href="{{ url_for('admin_clients') }}"
+         class="sidebar-link {% if request.endpoint == 'admin_clients' %}active{% endif %}">
+        <span class="sidebar-icon">👥</span>
+        <span class="sidebar-text">Clients</span>
+      </a>
+
+    </nav>
+
+    <div class="sidebar-bottom">
+      <a href="{{ url_for('index') }}" class="sidebar-link">
+        <span class="sidebar-icon">🌐</span>
+        <span class="sidebar-text">Voir le site</span>
+      </a>
+      <a href="{{ url_for('logout') }}" class="sidebar-logout">
+        <span class="sidebar-icon">↩</span>
+        <span class="sidebar-text">Déconnexion</span>
+      </a>
+    </div>
+
+  </aside>
+
+  <!-- CONTENU PRINCIPAL -->
+  <main class="dashboard-main">
+    <div class="dashboard-content">
+      {% block dashboard_content %}{% endblock %}
+    </div>
+  </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

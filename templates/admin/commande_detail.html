@@ -1,0 +1,58 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Commande #{{ commande.id }} – Admin Anifashion{% endblock %}
+{% block dashboard_content %}
+
+<div class="dash-header">
+  <div>
+    <h1>Commande <em>#{{ commande.id }}</em></h1>
+    <p>{{ commande.client.prenom }} {{ commande.client.nom }} · {{ commande.date_commande.strftime('%d/%m/%Y %H:%M') }}</p>
+  </div>
+  <a href="{{ url_for('admin_commandes') }}" class="btn-secondary">← Retour</a>
+</div>
+
+<div class="order-detail-grid">
+  <div class="order-items">
+    <div class="form-card">
+      <h3 class="form-card-title">Articles commandés</h3>
+      {% for ligne in commande.lignes %}
+      <div class="order-item">
+        <div class="order-item-img">{{ ligne.produit.categorie.emoji if ligne.produit.categorie else '👗' }}</div>
+        <div class="order-item-info">
+          <p class="order-item-name">{{ ligne.produit.nom }}</p>
+          <p class="order-item-qty">× {{ ligne.quantite }} · {{ "%.2f"|format(ligne.prix_unitaire) }} € / unité</p>
+        </div>
+        <div class="order-item-price"><strong>{{ "%.2f"|format(ligne.prix_unitaire * ligne.quantite) }} €</strong></div>
+      </div>
+      {% endfor %}
+      <div class="order-total"><span>Total commande</span><strong>{{ "%.2f"|format(commande.total) }} €</strong></div>
+    </div>
+    <div class="form-card">
+      <h3 class="form-card-title">Client</h3>
+      <div class="profile-quick">
+        <div class="profile-quick-item"><span>👤</span> {{ commande.client.prenom }} {{ commande.client.nom }}</div>
+        <div class="profile-quick-item"><span>📧</span> {{ commande.client.email }}</div>
+        <div class="profile-quick-item"><span>📞</span> {{ commande.client.telephone or '—' }}</div>
+        <div class="profile-quick-item"><span>📍</span> {{ commande.adresse_livraison or '—' }}, {{ commande.ville_livraison or '' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="order-info">
+    <div class="form-card">
+      <h3 class="form-card-title">Modifier le statut</h3>
+      <form method="POST">
+        <div class="form-group">
+          <label>Statut actuel</label>
+          <select name="statut">
+            {% for s in ['En attente','Confirmée','Expédiée','Livrée','Annulée'] %}
+            <option value="{{ s }}" {% if commande.statut == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn-primary w-full">Mettre à jour →</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block title %}Anifashion – Mode Femme & Fille{% endblock %}
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-tag">✦ Nouvelle Collection Printemps 2025</p>
+    <h1>La Mode qui vous <em>Sublime</em></h1>
+    <p>Des tenues élégantes et tendances pour femmes et petites filles — parce que le style se partage en famille.</p>
+    <div>
+      <a href="{{ url_for('produits') }}" class="btn-primary">Découvrir →</a>
+      <a href="{{ url_for('produits') }}" class="btn-secondary">Voir la collection</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-img-bg"></div>
+    <div class="hero-float-text">Mode</div>
+    <div class="hero-product-card">
+      <div class="hero-product-img">👗</div>
+      <h3>Nouvelle Collection</h3>
+      <div class="price">Dès 29,90 €</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>Livraison offerte dès 60€</span><span class="dot">✦</span>
+    <span>Nouveautés chaque semaine</span><span class="dot">✦</span>
+    <span>Retours gratuits 30 jours</span><span class="dot">✦</span>
+    <span>Tailles 34 à 52</span><span class="dot">✦</span>
+    <span>Fille 2 à 16 ans</span><span class="dot">✦</span>
+    <span>Livraison offerte dès 60€</span><span class="dot">✦</span>
+    <span>Nouveautés chaque semaine</span><span class="dot">✦</span>
+    <span>Retours gratuits 30 jours</span><span class="dot">✦</span>
+    <span>Tailles 34 à 52</span><span class="dot">✦</span>
+    <span>Fille 2 à 16 ans</span><span class="dot">✦</span>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="section">
+  <div class="section-header reveal">
+    <span class="section-tag">Nos Univers</span>
+    <h2 class="section-title">Explorez nos <em>Collections</em></h2>
+  </div>
+  <div class="categories-grid reveal">
+    {% for cat in categories %}
+    <div class="cat-card {% if loop.first %}cat-large{% endif %}">
+      <div class="cat-bg cat-bg-{{ loop.index }}"></div>
+      <div class="cat-emoji">{{ cat.emoji }}</div>
+      <div class="cat-info">
+        <h3>{{ cat.nom }}</h3>
+        <p>{{ cat.produits|length }} articles</p>
+      </div>
+      <a href="{{ url_for('produits') }}?categorie={{ cat.id }}" class="cat-link"></a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- PRODUITS -->
+<section class="section" style="padding-top:0">
+  <div class="section-header reveal">
+    <span class="section-tag">Cette Semaine</span>
+    <h2 class="section-title">Nos <em>Coups de Cœur</em></h2>
+  </div>
+  <div class="products-grid">
+    {% for p in produits %}
+    <div class="product-card reveal">
+      <div class="product-img" style="background:linear-gradient(160deg,#fce8ef,#f2a7b8)">
+        {% if p.image and p.image != 'default.jpg' %}
+          <img src="{{ url_for('static', filename='uploads/' + p.image) }}" alt="{{ p.nom }}">
+        {% else %}
+          <div class="product-img-bg">👗</div>
+        {% endif %}
+        {% if p.badge %}<span class="badge-{{ 'new' if p.badge == 'Nouveau' else 'sale' }}">{{ p.badge }}</span>{% endif %}
+        <div class="product-actions">
+          <button class="btn-cart">+ Panier</button>
+          <button class="btn-wish">♡</button>
+        </div>
+      </div>
+      <div class="product-info">
+        <p class="cat-label">{{ p.categorie.nom if p.categorie else '' }}</p>
+        <h3>{{ p.nom }}</h3>
+        <div class="price-row">
+          <span class="price-current">{{ "%.2f"|format(p.prix) }} €</span>
+          {% if p.prix_ancien %}<span class="price-old">{{ "%.2f"|format(p.prix_ancien) }} €</span>{% endif %}
+        </div>
+        <div class="stars">★★★★★</div>
+      </div>
+    </div>
+    {% else %}
+    <p style="text-align:center;padding:40px;color:#9a7a87">Aucun produit disponible pour le moment.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- PROMO -->
+<div class="promo reveal">
+  <div class="promo-left">
+    <h2>Jusqu'à <em>-50%</em><br>sur les Soldes</h2>
+    <p>Offre limitée · Code : ANI50</p>
+    <a href="{{ url_for('produits') }}" class="btn-primary" style="margin-top:28px;display:inline-flex">Profiter des offres →</a>
+  </div>
+  <div>
+    <div class="promo-number"><span class="promo-pct">-</span>50<span class="promo-pct">%</span></div>
+  </div>
+</div>
+
+<!-- NEWSLETTER -->
+<section class="newsletter reveal">
+  <span class="section-tag">Restez connectée</span>
+  <h2>Rejoignez la famille <em>Anifashion</em></h2>
+  <p>Recevez les dernières tendances et offres exclusives.</p>
+  <div class="newsletter-form">
+    <input type="email" placeholder="votre@email.com">
+    <button>S'abonner</button>
+  </div>
+</section>
+
+{% endblock %}
